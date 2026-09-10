@@ -2,9 +2,23 @@ import express from "express";
 import cors from "cors";
 import useRouter from "./Modules/users/users.route.js";
 import blogRouter from "./Modules/Blogs/blogs.route.js";
+import {dbConnection} from "./DB/db.connection.js";
 const app = express();
 
 const PORT = 5000;
+
+
+//db connection
+
+dbConnection();
+// Middleware to handle CORS (Cross-Origin Resource Sharing)
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
@@ -15,20 +29,12 @@ app.use((req, res, next) => {
   next();
 });
 
-// Middleware to handle CORS (Cross-Origin Resource Sharing)
-app.use(
-  cors({
-    origin: "https://yourdomain.com",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  }),
-);
-
 // Sample endpoint to test the server
 app.get("/", (req, res) => {
   res.send("Hello, World!, ths is a sample endpoint to test the server.");
 });
 
+// Project routes - Controllers
 app.use("/api/users", useRouter);
 app.use("/api/blogs", blogRouter);
 
